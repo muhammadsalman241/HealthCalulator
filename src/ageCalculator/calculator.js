@@ -15,11 +15,11 @@ export default class Calculator{
         }
     }
     calculate(){
-        let date = new Date(2000, 1, 1);
+        let date = new Date(2000, 0, 0);
         date.setMilliseconds(this.lDate - this.bDate);
-        this.age.days = date.getDay()+1;
+        this.age.days = date.getDay();
         this.age.years = date.getYear()-100;
-        this.age.months = date.getMonth()+1;
+        this.age.months = date.getMonth();
         this.calculated = true;
     }
     getAge(){
@@ -27,14 +27,14 @@ export default class Calculator{
             return <Text></Text>;
         return(
             <View>
-                <Text style={{fontSize:15, fontWeight:'bold', textAlign: 'center', textDecorationLine:'underline'}}>Your Age is</Text>
-                <Text style={{fontSize:20, color:'#282828'}}>
+                <Text style={{color: 'white', fontSize:20, fontWeight:'bold', textAlign: 'center', textDecorationLine:'underline'}}>Your Age is</Text>
+                <Text style={{fontSize:20, color:'#C0C0C0'}}>
                     Years 
-                    <Text style={{fontWeight: 'bold'}}> {this.age.years}</Text>,
+                    <Text style={{fontWeight: 'bold', color:'white'}}> {this.age.years}</Text>,
                     Months 
-                    <Text style={{fontWeight: 'bold'}}> {this.age.months}</Text>,
+                    <Text style={{fontWeight: 'bold', color:'white'}}> {this.age.months}</Text>,
                     Days 
-                    <Text style={{fontWeight: 'bold'}}> {this.age.days}</Text>
+                    <Text style={{fontWeight: 'bold', color:'white'}}> {this.age.days}</Text>
                 </Text>
             </View>
         );

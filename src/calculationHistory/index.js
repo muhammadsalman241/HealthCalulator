@@ -12,59 +12,38 @@ import {
     Icon, 
     Text ,
     Accordion ,
-    FooterTab
+    FooterTab,
+    Left
 } from 'native-base';
 
 
-const mainLogo = require('./img/homeLogo.png');
-const bg = require('./img/homeBg.jpg');
-const dataArray = [
-    {
-      title: "Welcome",
-      content:
-        "This Health Calculator able you to calculate your Body Mass Index and keep care of your health accordingly, it also offers you to calculate your age, Be happy and take Care your self!"
-    },
-    {
-      title: "BMI Calculator",
-      content:
-        "BMI expresses the relationship between your height and weight as a single number that is not dependent on “frame size.”  it is fairly new as a measure of health."
-    },
-    {
-      title: "Age Calculator",
-      content:
-        "Aging is the process of becoming older, Human beings and members of other species, especially animals, necessarily experience aging and mortality, Calculate your age and be live happy!"
+const mainLogo = require('../img/hisLogo.png');
+
+export default class History extends Component{
+    constructor(props){
+        super(props);
     }
-  ];
-
-
-export default class Home extends Component{
     render(){
         return(
             <Container style={{paddingTop: Constants.statusBarHeight}}>
                 <Header style={{ backgroundColor: "#3b3bff" }} androidStatusBarColor="#00003b">
-                    <Body style={{alignItems:'center'}}>
-                        <Title>Health Calculator</Title>
+                    <Left>
+                        <Button transparent onPress={() => {this.props.navigation.navigate('home')}}>
+                            <Icon name='arrow-back' />
+                        </Button>
+                    </Left>
+                    <Body>
+                        <Title>Calculation History</Title>
                     </Body>
                 </Header>
-                <ImageBackground source={bg} style={styles.imageContainer} imageStyle={{resizeMode: 'stretch'}}>
-                    <View style={{flex:1, justifyContent:'space-around'}}>
-                        <View style={styles.logoContainer}>
-                            <Image source={mainLogo} style={styles.logo} />
-                        </View>
-                        <Accordion
-                            contentContainerStyle={styles.detailsOutter}
-                            dataArray={dataArray}
-                            animation={true}
-                            expanded={true}
-                            headerStyle={{ backgroundColor: "#b7daf8" }}
-                            contentStyle={styles.details}
-                            expanded={0}
-                        />
+                <View style={{flex:1, justifyContent:'space-around'}}>
+                    <View style={styles.logoContainer}>
+                        <Image source={mainLogo} style={styles.logo} />
                     </View>
-                </ImageBackground>
+                </View>
                 <Footer style={{ backgroundColor: "#3b3bff" }} >
                     <FooterTab >
-                        <Button active={true} style={{ backgroundColor: "#3b3bff" }} onPress={() => {this.props.navigation.push('home')}}>
+                        <Button active={false} style={{ backgroundColor: "#3b3bff" }} onPress={() => {this.props.navigation.navigate('home')}}>
                             <Icon active={true} type="FontAwesome" name="home" />
                             <Text style={styles.footerTxt}>Home</Text>
                         </Button>
@@ -76,6 +55,10 @@ export default class Home extends Component{
                             <Icon active={false} type="FontAwesome" name="universal-access" />
                             <Text style={styles.footerTxt}>BMI Calculator</Text>
                         </Button>
+                        <Button active={true}  style={{ backgroundColor: "#3b3bff" }} onPress={() => {this.props.navigation.push('history')}}>
+                            <Icon active={true} type="FontAwesome" name="history" />
+                            <Text style={styles.footerTxt}>History</Text>
+                        </Button>
                     </FooterTab>
                 </Footer>
           </Container>
@@ -86,11 +69,6 @@ export default class Home extends Component{
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 const styles = StyleSheet.create({  
-    imageContainer: {
-        flex: 1,
-        width: null,
-        height: null,
-    },
     logoContainer: {
         flex: (Platform.OS === 'web') ? 2 : 0.5,
         alignItems:'center',

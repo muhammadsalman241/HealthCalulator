@@ -1,22 +1,21 @@
 import React, { Component} from "react";
 import { Image, ImageBackground, View, StyleSheet, Dimensions, Platform } from "react-native";
+import Constants from 'expo-constants';
 import { 
     Container,
     Header, 
     Content, 
     Footer, 
-    Card,
-    CardItem,
     Title, 
     Button, 
     Left, 
     Right, 
     Body, 
-    Icon, 
-    H3, 
+    Icon,
     Text , 
     Subtitle,
-    DatePicker
+    DatePicker,
+    FooterTab
 } from 'native-base';
 import Calculator from './calculator';
 
@@ -43,10 +42,10 @@ export default class AgeCalculator extends Component{
     render(){
         const result =  this.state.ageCal.getAge();
         return(
-            <Container>
+            <Container style={{paddingTop: Constants.statusBarHeight}}>
                 <Header style={{ backgroundColor: "#006200" }} androidStatusBarColor="#006200">
                     <Left>
-                        <Button transparent>
+                        <Button transparent onPress={() => {this.props.navigation.navigate('home')}}>
                             <Icon name='arrow-back' />
                         </Button>
                     </Left>
@@ -57,67 +56,77 @@ export default class AgeCalculator extends Component{
                     <Right />
                 </Header>
                 <ImageBackground source={bg} style={styles.imageContainer} imageStyle={{resizeMode: 'stretch'}}>
-                     <Content>
+                     <View style={{flex:1, justifyContent:'space-around'}}>
                         <View style={styles.logoContainer}>
                             <Image source={mainLogo} style={styles.logo} />
                         </View>
-                        <View style={styles.box_style}>   
+                        <View style={[styles.box_style, {flex:2}]}>
                             <Text style={styles.title}>Select the Dates</Text>
                             <View style={styles.pickerStyle}>
-                                <DatePicker
-                                    defaultDate={new Date(1997, 0, 0)}
-                                    locale={"en"}
-                                    timeZoneOffsetInMinutes={undefined}
-                                    modalTransparent={false}
-                                    animationType={"fade"}
-                                    androidMode={"default"}
-                                    placeHolderText={"Select Your Birth Date"}
-                                    textStyle={{ color: "green", fontWeight:'200'}}
-                                    disabled={false}
-                                    onDateChange={this.setStart}
-                                />
+                                {
+                                    (Platform.OS === 'web')?
+                                        <input type="date" onChange={(event) => this.setStart(new Date(event.target.value))}/>
+                                    :
+                                        <DatePicker
+                                            defaultDate={new Date(1997, 0, 0)}
+                                            locale={"en"}
+                                            timeZoneOffsetInMinutes={undefined}
+                                            modalTransparent={false}
+                                            animationType={"fade"}
+                                            androidMode={"default"}
+                                            placeHolderText={"Select Your Birth Date"}
+                                            textStyle={{ color: "green", fontWeight:'bold'}}
+                                            disabled={false}
+                                            onDateChange={this.setStart}
+                                        />
+                                }
                             </View>
                             <View style={styles.pickerStyle}>
-                                <DatePicker
-                                    defaultDate={new Date()}
-                                    locale={"en"}
-                                    timeZoneOffsetInMinutes={undefined}
-                                    modalTransparent={false}
-                                    animationType={"fade"}
-                                    androidMode={"default"}
-                                    placeHolderText={"Select (Age as on) Date"}
-                                    textStyle={{ color: "red", fontWeight:'200' }}
-                                    disabled={false}
-                                    onDateChange={this.setEnd}
-                                />
+                                {
+                                    (Platform.OS === 'web')?
+                                        <input type="date" onChange={(event) => this.setEnd(new Date(event.target.value))}/>
+                                    :
+                                        <DatePicker
+                                            defaultDate={new Date()}
+                                            locale={"en"}
+                                            timeZoneOffsetInMinutes={undefined}
+                                            modalTransparent={false}
+                                            animationType={"fade"}
+                                            androidMode={"default"}
+                                            placeHolderText={"Select (Age as on) Date"}
+                                            textStyle={{ color: "red", placeHolderColor: 'red', fontWeight:'bold' }}
+                                            disabled={false}
+                                            onDateChange={this.setEnd}
+                                        />
+                                }
                             </View>
                         </View>
-                        <View style={ (this.state.show)? styles.box_style:{margin:20, padding:20} }>
+                        <View style={ (this.state.show)? [styles.box_style, {flex:0.8, alignItems:'center'}]:{margin:10, padding:10} }>
                             {result}
                         </View>
-                        <View style={{ marginBottom: 80 }}>
+                        <View style={{flex:1}}>
                             <Button
-                                style={{...styles.pickerStyle, alignSelf: "center", backgroundColor: '#0099CC' }}
+                                style={[styles.box_style, {alignSelf: 'center', marginVertical:0}]}
                                 onPress={() => this.setState({show: (this.state.bdate != undefined && this.state.enddate != undefined), ageCal: new Calculator(this.state.bdate, this.state.enddate)})}
                             >
                                 <Text>Calculate Age</Text>
                             </Button>
                         </View>
-                    </Content>
+                    </View>
                 </ImageBackground>
                 <Footer style={{ backgroundColor: "#006200" }} >
-                <FooterTab>
-                        <Button active={false} onPress={() => {}}>
+                <FooterTab >
+                        <Button active={false} style={{ backgroundColor: "#006200" }}  onPress={() => {this.props.navigation.navigate('home')}}>
                             <Icon active={false} type="FontAwesome" name="home" />
-                            <Text>Home</Text>
+                            <Text style={styles.footerTxt}>Home</Text>
                         </Button>
-                        <Button active={true} onPress={() => {}}>
+                        <Button active={true} style={{ backgroundColor: "#006200" }}  onPress={() => {this.props.navigation.push('age')}}>
                             <Icon active={true} type="FontAwesome" name="hourglass-half" />
-                            <Text>Age Calculator</Text>
+                            <Text style={styles.footerTxt}>Age Calculator</Text>
                         </Button>
-                        <Button active={false} onPress={() => {}}>
+                        <Button active={false} style={{ backgroundColor: "#006200" }}  onPress={() => {this.props.navigation.navigate('bmi')}}>
                             <Icon active={false} type="FontAwesome" name="universal-access" />
-                            <Text>BMI Calculator</Text>
+                            <Text style={styles.footerTxt}>BMI Calculator</Text>
                         </Button>
                     </FooterTab>
                 </Footer>
@@ -127,6 +136,7 @@ export default class AgeCalculator extends Component{
 }
 
 const deviceHeight = Dimensions.get("window").height;
+const deviceWidth = Dimensions.get("window").width;
 const styles = StyleSheet.create({  
     imageContainer: {
         flex: 1,
@@ -134,46 +144,52 @@ const styles = StyleSheet.create({
         height: null,
     },
     logoContainer: {
-        flex: 1,
-        marginTop: deviceHeight / 30,
-        marginBottom: 60
+        flex:2,
+        alignItems:'center',
+        justifyContent:'space-around'
     },
     logo: {
-        left: Platform.OS === "android" ? 40 : 50,
-        top: Platform.OS === "android" ? 35 : 60,
-        width: 280,
-        height: 120,
-        borderRadius: 10
-    },
-    text: {
-        color: "#D8D8D8",
-        bottom: 6,
-        marginTop: 5
-    },
-    title: {
-        color:'white',
-        fontSize:20, 
-        fontWeight:'bold', 
-        textAlign: 'center', 
-        textDecorationLine:'underline', 
-        paddingBottom: 5
-    },
-    pickerStyle:{
-        backgroundColor: '#05B8CC', 
-        borderColor: 'blue', 
-        borderTopRightRadius: 20,
-        borderWidth: 2, 
-        marginBottom: 20,
-    },
-    box_style: {
-        backgroundColor: '#33A1DE',
-        borderWidth: 2.5,
-        borderColor: 'blue',
+        height: (deviceWidth > deviceHeight)? deviceHeight/4:deviceWidth/2.9,
+        width: (deviceWidth > deviceHeight)? deviceHeight/2:deviceWidth/1.5,
+        borderColor: 'white',
         borderBottomLeftRadius: 25,
         borderTopRightRadius: 25,
-        alignContent: 'center',
-        alignItems: 'center',        
-        margin:20,
-        padding:20
+        borderWidth: 0.7
+    },
+    title: {
+        color:'#ffffff',
+        fontSize: (Platform.OS == 'web')? deviceWidth/30:deviceWidth/12,
+        fontWeight:'700', 
+        textAlign: 'center', 
+        textDecorationLine: 'underline'
+    },
+    pickerStyle:{
+        backgroundColor: '#ffffff', 
+        borderColor: '#105E51', 
+        borderTopRightRadius: 20,
+        borderWidth: 2, 
+        alignItems:'center',
+        ...Platform.select({
+            web:{
+                padding:deviceHeight/70,
+                backgroundColor: 'rgba(27, 134, 116, 0.6)'
+            }
+        })
+    },
+    box_style: {
+        backgroundColor: 'rgba(27, 134, 116, 0.4)',
+        borderBottomLeftRadius: 25,
+        borderTopRightRadius: 25,
+        borderWidth: 2.5,
+        borderColor: '#ffffff',
+        alignContent: 'center',    
+        justifyContent:'space-around',
+        marginHorizontal: deviceWidth/10,
+        marginVertical:5,
+        padding:5,
+        paddingHorizontal: deviceWidth/12
+    },
+    footerTxt:{
+        fontSize: (deviceWidth > deviceHeight )? deviceHeight/70:deviceWidth/45
     }
 });

@@ -4,10 +4,14 @@ import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import 'react-native-gesture-handler';
 import {createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
+import { createStackNavigator  } from 'react-navigation-stack';
+
 import Home from './src/home';
 import BMICalculator from './src/bmiCalculator/';
 import AgeCalculator from './src/ageCalculator/';
+import History from './src/calculationHistory/';
+
+console.disableYellowBox = true;
 
 export default class App extends React.Component {
   constructor(props) {
@@ -39,9 +43,24 @@ export default class App extends React.Component {
 
 const AppNavigator =  createStackNavigator(
   {
-    home: Home ,
-    bmi: BMICalculator ,
-    age: AgeCalculator 
+    home: {
+      screen: Home ,
+      navigationOptions:{
+        header: null
+      }
+    },
+    bmi:{
+      screen:BMICalculator ,
+      navigationOptions:{
+        header: null
+      }
+    },
+    age: {
+      screen: AgeCalculator  ,
+      navigationOptions:{
+        header: null
+      }
+  },
   },
   {
     initialRouteName: "home"
