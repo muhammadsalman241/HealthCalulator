@@ -18,6 +18,8 @@ import {
     FooterTab
 } from 'native-base';
 import Calculator from './calculator';
+import mainLogoWeb from '../img/a_logo.png';
+import bgWeb from '../img/greenBg.jpg';
 
 const mainLogo = require('../img/a_logo.png');
 const bg = require('../img/greenBg.jpg');
@@ -55,10 +57,10 @@ export default class AgeCalculator extends Component{
                     </Body>
                     <Right />
                 </Header>
-                <ImageBackground source={bg} style={styles.imageContainer} imageStyle={{resizeMode: 'stretch'}}>
+                <ImageBackground source={Platform.OS == 'web'? bgWeb:bg} style={styles.imageContainer} imageStyle={{resizeMode: 'stretch'}}>
                      <View style={{flex:1, justifyContent:'space-around'}}>
                         <View style={styles.logoContainer}>
-                            <Image source={mainLogo} style={styles.logo} />
+                            <Image source={Platform.OS =='web'? mainLogoWeb:mainLogo} style={styles.logo} />
                         </View>
                         <View style={[styles.box_style, {flex:2}]}>
                             <Text style={styles.title}>Select the Dates</Text>

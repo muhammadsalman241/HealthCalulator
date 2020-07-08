@@ -14,7 +14,8 @@ import {
     Accordion ,
     FooterTab
 } from 'native-base';
-
+import mainLogoWeb from './img/homeLogo.png';
+import bgWeb from './img/homeBg.jpg';
 
 const mainLogo = require('./img/homeLogo.png');
 const bg = require('./img/homeBg.jpg');
@@ -46,10 +47,10 @@ export default class Home extends Component{
                         <Title>Health Calculator</Title>
                     </Body>
                 </Header>
-                <ImageBackground source={bg} style={styles.imageContainer} imageStyle={{resizeMode: 'stretch'}}>
+                <ImageBackground source={Platform.OS == 'web'? bgWeb:bg} style={styles.imageContainer} imageStyle={{resizeMode: 'stretch'}}>
                     <View style={{flex:1, justifyContent:'space-around'}}>
                         <View style={styles.logoContainer}>
-                            <Image source={mainLogo} style={styles.logo} />
+                            <Image source={Platform.OS == 'web'? mainLogoWeb: mainLogo} style={styles.logo} />
                         </View>
                         <Accordion
                             contentContainerStyle={styles.detailsOutter}

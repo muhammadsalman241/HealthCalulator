@@ -19,6 +19,7 @@ import {
     FooterTab
 } from 'native-base';
 import CalculateBMI from './calculator';
+import bgWeb from '../img/bmiBg.jpg';
 
 const bg = require('../img/bmiBg.jpg');
 
@@ -46,7 +47,7 @@ export default class BMICalculator extends Component{
                     </Body>
                     <Right />
                 </Header>
-                <ImageBackground source={bg} style={styles.imageContainer} imageStyle={{resizeMode: 'stretch'}}>
+                <ImageBackground source={Platform.OS == 'web'? bgWeb:bg} style={styles.imageContainer} imageStyle={{resizeMode: 'stretch'}}>
                     <View style={{flex:1, justifyContent:'space-around'}}>
                         <View style={[styles.container_style, {flex:1, justifyContent:'center'}]}>
                             <Text style={styles.title}>Calculate Your B.M.I</Text>
