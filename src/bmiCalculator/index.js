@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { Slider, ImageBackground, View, StyleSheet, Dimensions, Platform} from "react-native";
+import Constants from 'expo-constants';
 import AlertPro from "react-native-alert-pro";
 import { 
     Container,
@@ -14,7 +15,8 @@ import {
     Icon, 
     Text,
     Item,
-    Input
+    Input,
+    FooterTab
 } from 'native-base';
 import CalculateBMI from './calculator';
 
@@ -24,6 +26,7 @@ export default class BMICalculator extends Component{
     constructor(props) {
         super(props);
         this.state = {
+            show:false,
             height: 0,
             weight: 0,
             data: {bmi: 0, status: ""}
@@ -31,10 +34,10 @@ export default class BMICalculator extends Component{
     }    
     render(){
         return(
-            <Container>
+            <Container style={{paddingTop: Constants.statusBarHeight}}>
                 <Header style={{ backgroundColor: "#006d5b" }} androidStatusBarColor="#6dffe7">
                     <Left>
-                        <Button transparent>
+                        <Button transparent onPress={() => {this.props.navigation.navigate('home')}}>
                             <Icon name='arrow-back' />
                         </Button>
                     </Left>
@@ -43,130 +46,149 @@ export default class BMICalculator extends Component{
                     </Body>
                     <Right />
                 </Header>
-                <Content>
-                    <ImageBackground source={bg} style={styles.imageContainer} imageStyle={{resizeMode: 'stretch'}}>
-                        <View style={styles.logoContainer}>
-                            <Text style={styles.title}>Calculate You BMI</Text>
+                <ImageBackground source={bg} style={styles.imageContainer} imageStyle={{resizeMode: 'stretch'}}>
+                    <View style={{flex:1, justifyContent:'space-around'}}>
+                        <View style={[styles.container_style, {flex:1, justifyContent:'center'}]}>
+                            <Text style={styles.title}>Calculate Your B.M.I</Text>
                         </View>
-                        <View style={styles.box_style}>   
+                        <View style={[styles.box_style, {flex:4, justifyContent:'space-evenly'}]}>
                             <Text style={styles.subtitle}>Select Your height (feet)</Text>
-                            <Item rounded>
+                             <Item rounded style={{borderColor: '#008080'}}>
                                 <Input 
                                     style={styles.subtitle} 
-                                    placeholder={this.state.height.toFixed(2)}
+                                    placeholder={this.state.height.toFixed(1)}
                                     keyboardType='number-pad'
                                     onSubmitEditing ={({ nativeEvent })=> {
-                                        if(isNaN(nativeEvent.text))
+                                        if(isNaN(nativeEvent.text) || nativeEvent.text=="")
                                             return;
                                         else
                                             this.setState({height:parseFloat(nativeEvent.text)});
                                     }}
                                 />
                             </Item>
-                            <View >
-                                <Slider
-                                    style={{width: 220, height: 80}}
-                                    minimumValue={0}
-                                    maximumValue={10.4987}
-                                    value={this.state.height}
-                                    minimumTrackTintColor="#00322a"
-                                    maximumTrackTintColor="#006d5b"
-                                    onValueChange={(n) => this.setState({height: n})}
-                                />
+                            <View style={{padding:(Platform.OS === 'web')? 5:0}}>
+                                {
+                                    (Platform.OS === 'web')?
+                                        <input type="range" value={this.state.height} min="0" max="10.4987" onChange={(event) => this.setState({height:parseFloat(event.target.value)})}/>
+                                    :
+                                        <Slider
+                                            style={{width: 220, height: 80}}
+                                            minimumValue={0}
+                                            maximumValue={10.4987}
+                                            value={this.state.height}
+                                            minimumTrackTintColor="#00322a"
+                                            maximumTrackTintColor="#006d5b"
+                                            onValueChange={(n) => this.setState({height: n})}
+                                        />
+                                }
                             </View>
                             <Text style={styles.subtitle}>Select Your Weight (Kg)</Text>
-                            <Item rounded>
+                            <Item rounded style={{borderColor: '#008080'}}>
                                 <Input 
                                     style={styles.subtitle} 
                                     placeholder={this.state.weight.toFixed(0)}
                                     keyboardType='number-pad'
                                     onSubmitEditing ={({ nativeEvent })=> {
-                                        if(isNaN(nativeEvent.text))
+                                        if(isNaN(nativeEvent.text) || nativeEvent.text=="")
                                             return;
                                         else
                                             this.setState({weight: parseInt(nativeEvent.text)});
                                     }}
                                 />
                             </Item>
-                            <View>
-                                <Slider
-                                    style={{width: 220, height: 80}}
-                                    minimumValue={0}
-                                    maximumValue={200}
-                                    value={this.state.weight}
-                                    minimumTrackTintColor="#00322a"
-                                    maximumTrackTintColor="#006d5b"
-                                    step={1}
-                                    onValueChange={(n) => this.setState({weight: n})}
-                                />
+                            <View style={{padding:(Platform.OS === 'web')? 5:0}}>
+                                {
+                                    (Platform.OS === 'web')?
+                                        <input type="range" value={this.state.weight} min="0" max="200" onChange={(event) => this.setState({weight:parseInt(event.target.value)})} />
+                                    :
+                                        <Slider
+                                            style={{width: 220, height: 80}}
+                                            minimumValue={0}
+                                            maximumValue={200}
+                                            value={this.state.weight}
+                                            minimumTrackTintColor="#00322a"
+                                            maximumTrackTintColor="#006d5b"
+                                            step={1}
+                                            onValueChange={(n) => this.setState({weight: n})}
+                                        />
+                                }
                             </View>
+                            <View style={{position:'absolute', shadowColor:'white'}}>
+                                {    
+                                    (this.state.show)?
+                                        <AlertPro
+                                            ref={ref => {
+                                                this.AlertPro = ref;
+                                                if(this.state.show)
+                                                    this.AlertPro.open();
+                                            }}
+                                            onConfirm={() => {
+                                                this.AlertPro.close();
+                                                this.setState({show:false})
+                                            }}
+                                            title= 'Your BMI is...'
+                                            message= {this.state.data.bmi + "\nAnd it is " + this.state.data.status}
+                                            textConfirm="Ok!"
+                                            showCancel={false}
+                                            closeOnPressMask={false}
+                                            customStyles={{
+                                                mask: {
+                                                    backgroundColor: "transparent"
+                                                },
+                                                container: {
+                                                    borderWidth: 1,
+                                                    borderColor: "#00816b",
+                                                    shadowColor: "#000000",
+                                                    shadowOpacity: 0.1,
+                                                    shadowRadius: 10
+                                                },
+                                                buttonConfirm: {
+                                                    backgroundColor: "#00594b"
+                                                },
+                                                title: {
+                                                    color:'#00cfad',
+                                                    marginBottom:8
+                                                },
+                                                message: {
+                                                    fontSize: 20,
+                                                }
+                                            }}
+                                        />
+                                    
+                                    :
+                                        <View></View>
+                            }
                         </View>
-                        <View style={{marginBottom:35}}>
-                            <AlertPro
-                                ref={ref => {
-                                    this.AlertPro = ref;
-                                }}
-                                onConfirm={() => {
-                                    this.AlertPro.close();
-                                    this.setState({show:false})
-                                }}
-                                title= 'Your BMI is...'
-                                message= {this.state.data.bmi + "\nAnd it is " + this.state.data.status}
-                                textConfirm="Ok!"
-                                showCancel={false}
-                                customStyles={{
-                                    mask: {
-                                        backgroundColor: "transparent"
-                                    },
-                                    container: {
-                                        borderWidth: 1,
-                                        borderColor: "#00816b",
-                                        shadowColor: "#000000",
-                                        shadowOpacity: 0.1,
-                                        shadowRadius: 10
-                                    },
-                                    buttonConfirm: {
-                                        backgroundColor: "#00594b"
-                                    },
-                                    title: {
-                                        color:'#00cfad',
-                                        marginBottom:8
-                                    },
-                                    message: {
-                                        fontSize: 20,
-                                    }
-                                }}
-                            />
                         </View>
-                        <View style={{ marginBottom: 50 }}>
+                        <View style={{flex:1}}>
                             <Button
-                                style={styles.btnStyle}
+                                style={[styles.container_style, {alignSelf:'center'}]}
                                 onPress={() => {
                                     if(this.state.height != 0 && this.state.weight != 0){
-                                        this.setState({data: CalculateBMI(this.state.height, this.state.weight)}); 
-                                        this.AlertPro.open();
+                                        this.setState({data: CalculateBMI(this.state.height, this.state.weight), show:true}); 
+                                        if(this.AlertPro != undefined)
+                                            this.AlertPro.open();
                                     }
-
                                 }}
                             >
-                                <Text>Calculate</Text>
+                                <Text style={{color:'#006666', fontWeight:'bold', fontSize:18}}>Calculate</Text>
                             </Button>
                         </View>
-                    </ImageBackground>
-                </Content>
+                    </View>
+                </ImageBackground>
                 <Footer style={{ backgroundColor: "#006d5b" }} >
-                <FooterTab>
-                        <Button active={false} onPress={() => {}}>
+                    <FooterTab>
+                        <Button active={false} style={{ backgroundColor: "#006d5b" }} onPress={() => {this.props.navigation.navigate('home')}}>
                             <Icon active={false} type="FontAwesome" name="home" />
-                            <Text>Home</Text>
+                            <Text style={styles.footerTxt}>Home</Text>
                         </Button>
-                        <Button active={false} onPress={() => {}}>
+                        <Button active={false} style={{ backgroundColor: "#006d5b" }} onPress={() => {this.props.navigation.navigate('age')}}>
                             <Icon active={false} type="FontAwesome" name="hourglass-half" />
-                            <Text>Age Calculator</Text>
+                            <Text style={styles.footerTxt}>Age Calculator</Text>
                         </Button>
-                        <Button active={true} onPress={() => {}}>
+                        <Button active={true} style={{ backgroundColor: "#006d5b" }} onPress={() => {this.props.navigation.push('bmi')}}>
                             <Icon active={true} type="FontAwesome" name="universal-access" />
-                            <Text>BMI Calculator</Text>
+                            <Text style={styles.footerTxt}>BMI Calculator</Text>
                         </Button>
                     </FooterTab>
                 </Footer>
@@ -176,6 +198,7 @@ export default class BMICalculator extends Component{
 }
 
 const deviceHeight = Dimensions.get("window").height;
+const deviceWidth = Dimensions.get("window").width;
 const styles = StyleSheet.create({  
     imageContainer: {
         flex: 1,
@@ -183,46 +206,45 @@ const styles = StyleSheet.create({
         height: null,
     },
     logoContainer: {
-        flex: 1,
-        marginTop: deviceHeight / 30,
-        marginBottom: 60
-    },
-    logo: {
-        left: Platform.OS === "android" ? 40 : 50,
-        top: Platform.OS === "android" ? 35 : 60,
-        width: 280,
-        height: 120,
-        alignItems: 'center'
-    },
-    text: {
-        color: "#D8D8D8",
-        bottom: 6,
-        marginTop: 5
+        marginTop: deviceHeight / 15,
+        marginBottom: 15
     },
     title: {
-        color:'#00bb9d',
-        fontSize:35, 
+        color:'#006666',
+        fontSize:deviceHeight/20, 
         fontWeight:'bold', 
-        textAlign: 'center', 
-        paddingBottom: 5
+        textAlign: 'center'
     },
     subtitle: {
-        color:'#006d5b',
-        fontSize:20, 
+        color:'#006666',
+        fontSize:(deviceWidth > deviceHeight )? deviceHeight/20:deviceWidth/18, 
         textAlign: 'center', 
-        paddingBottom: 5, 
+        paddingBottom: deviceHeight/30, 
         fontWeight:'bold'
-    },
-    btnStyle:{
-        backgroundColor: '#00947c', 
-        borderTopRightRadius: 20,
-        alignSelf: "center"
     },
     box_style: {
         alignContent: 'center',
-        alignItems: 'center',        
-        margin:20,
-        padding:20
+        alignItems: 'center',   
+        backgroundColor: 'rgba(27, 134, 116, 0.3)',
+        borderColor: 'transparent',
+        borderWidth: 2.5,     
+        borderRadius: 40,
+        marginHorizontal: deviceWidth/10,
+        padding:15,
+        paddingHorizontal: deviceWidth/60
+    },
+    container_style: {
+        backgroundColor:'rgba(0,128,128,0.5)',
+        borderColor: '#008080',
+        borderWidth: 2.5,
+        borderBottomLeftRadius: 25,
+        borderTopRightRadius: 25,     
+        marginHorizontal: deviceWidth/8,
+        marginVertical:10,
+        paddingBottom:5
+    },
+    footerTxt:{
+        fontSize: (deviceWidth > deviceHeight )? deviceHeight/70:deviceWidth/45
     }
 });
 
